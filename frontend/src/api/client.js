@@ -1,8 +1,10 @@
 import axios from 'axios'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
-  timeout: 30000,
+  baseURL: API_BASE,
+  timeout: 2500, // 2.5s fast timeout to prevent blocking UI
 })
 
 export default api
@@ -72,7 +74,7 @@ export const importAPI = {
   uploadIncidents: (formData) => api.post('/import/incidents', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
-  downloadTemplate: () => `http://localhost:8000/api/import/template/incidents`,
+  downloadTemplate: () => `${API_BASE}/import/template/incidents`,
 }
 
 export const datasourceAPI = {
