@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+shapely
+pandas
+scikit-learn
+python-multipart
+aiofiles
+openpyxl
