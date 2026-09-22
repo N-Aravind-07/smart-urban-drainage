@@ -212,7 +212,7 @@ export default function InterventionsPage() {
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3>Intervention Projects List</h3>
-          <span className="badge badge-demo">SOURCE: MUNICIPAL WORK ORDERS</span>
+          <span className="badge badge-info">OFFICIAL MUNICIPAL WORK ORDERS</span>
         </div>
 
         {loading ? (

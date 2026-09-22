@@ -5,6 +5,7 @@ import TopBar from './components/layout/TopBar'
 import DemoBanner from './components/layout/DemoBanner'
 
 // Pages
+import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
 import MapPage from './pages/MapPage'
 import DrainageNetworkPage from './pages/DrainageNetworkPage'
@@ -30,7 +31,8 @@ export default function App() {
         <DemoBanner />
         <div className="page-content" style={{ padding: 0 }}>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/drainage-network" element={<DrainageNetworkPage />} />
             <Route path="/incidents" element={<IncidentsPage />} />

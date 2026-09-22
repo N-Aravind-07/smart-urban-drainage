@@ -1,12 +1,13 @@
 import React from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useRole } from '../../context/RoleContext'
 
 const NAV_SECTIONS = [
   {
     label: 'Overview',
     items: [
-      { to: '/', icon: '📊', label: 'Dashboard' },
+      { to: '/', icon: '🏛️', label: 'Get Started' },
+      { to: '/dashboard', icon: '📊', label: 'Dashboard' },
       { to: '/map', icon: '🗺️', label: 'GIS Map' },
     ],
   },

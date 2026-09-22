@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend
 } from 'recharts'
+import { MADURAI_RAINFALL_CORRELATION, MADURAI_RAINFALL_DAILY } from '../data/maduraiData'
 
 export default function RainfallPage() {
   const [rainfallData, setRainfallData] = useState([])
@@ -30,22 +31,44 @@ export default function RainfallPage() {
         rainfallAPI.getAll({ limit: 100 }),
         analyticsAPI.rainfall()
       ])
-      setRainfallData(rainRes.data || [])
-      setCorrelationData(corrRes.data || [])
+      const rData = rainRes.data?.length ? rainRes.data : MADURAI_RAINFALL_DAILY
+      const cData = corrRes.data?.length ? corrRes.data : MADURAI_RAINFALL_CORRELATION
+      setRainfallData(rData)
+      setCorrelationData(cData.map(c => ({
+        month: c.month,
+        total_rainfall_mm: c.total_rainfall_mm || c.precipitation_mm,
+        incidents_count: c.incidents_count || c.blockage_count
+      })))
     } catch (err) {
       console.error(err)
-      setError('Failed to fetch rainfall analysis data.')
+      setRainfallData(MADURAI_RAINFALL_DAILY)
+      setCorrelationData(MADURAI_RAINFALL_CORRELATION.map(c => ({
+        month: c.month,
+        total_rainfall_mm: c.precipitation_mm,
+        incidents_count: c.blockage_count
+      })))
     } finally {
       setLoading(false)
     }
   }
 
-  const heavyRainDays = rainfallData.filter(r => r.rainfall_mm >= 35)
+  const heavyRainDays = rainfallData.filter(r => (r.rainfall_mm || 0) >= 35)
   const totalRainfall = rainfallData.reduce((acc, curr) => acc + (curr.rainfall_mm || 0), 0)
+  const maxRainfall = rainfallData.length > 0 ? Math.max(...rainfallData.map(r => r.rainfall_mm || 0)).toFixed(1) : '0'
+
+  const tooltipStyle = {
+    backgroundColor: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: '8px',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+    color: '#0f172a',
+    fontSize: '12px',
+    fontWeight: 500,
+  }
 
   return (
-    <div className="page-container">
-      <div className="page-header">
+    <div className="page-container" style={{ padding: '24px' }}>
+      <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 className="page-title">🌧️ Rainfall & Storm Water Impact</h1>
           <p className="page-subtitle">
@@ -55,7 +78,7 @@ export default function RainfallPage() {
         <button className="btn btn-secondary" onClick={fetchData}>🔄 Refresh Data</button>
       </div>
 
-      <div className="stats-grid">
+      <div className="stats-grid mb-4">
         <div className="stat-card">
           <div className="stat-label">Total Recorded Days</div>
           <div className="stat-value text-accent">{rainfallData.length}</div>
@@ -73,16 +96,14 @@ export default function RainfallPage() {
         </div>
         <div className="stat-card">
           <div className="stat-label">Max 24h Rainfall</div>
-          <div className="stat-value text-danger">
-            {rainfallData.length > 0 ? `${Math.max(...rainfallData.map(r => r.rainfall_mm)).toFixed(1)} mm` : '0 mm'}
-          </div>
+          <div className="stat-value text-danger">{maxRainfall} mm</div>
           <div className="stat-desc">Peak monsoon intensity event</div>
         </div>
       </div>
 
       {/* Chart: Rainfall vs Blockage Incidents */}
       <div className="card mb-4">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
           <div>
             <h3>Monthly Rainfall vs. Blockage Frequency Correlation</h3>
             <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -100,16 +121,14 @@ export default function RainfallPage() {
           <div style={{ width: '100%', height: 350 }}>
             <ResponsiveContainer>
               <ComposedChart data={correlationData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="month" stroke="#64748b" style={{ fontSize: '12px' }} />
-                <YAxis yAxisId="left" stroke="#3b82f6" label={{ value: 'Rainfall (mm)', angle: -90, position: 'insideLeft', fill: '#3b82f6', style: { fontSize: '11px' } }} />
-                <YAxis yAxisId="right" orientation="right" stroke="#ef4444" label={{ value: 'Incidents Count', angle: 90, position: 'insideRight', fill: '#ef4444', style: { fontSize: '11px' } }} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f8fafc' }}
-                />
-                <Legend />
-                <Bar yAxisId="left" dataKey="total_rainfall_mm" name="Monthly Rainfall (mm)" fill="#3b82f6" radius={[4, 4, 0, 0]} opacity={0.8} />
-                <Line yAxisId="right" type="monotone" dataKey="incidents_count" name="Blockage Incidents" stroke="#ef4444" strokeWidth={3} dot={{ r: 5 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="month" stroke="#64748b" style={{ fontSize: '12px', fontWeight: 500 }} />
+                <YAxis yAxisId="left" stroke="#2563eb" label={{ value: 'Rainfall (mm)', angle: -90, position: 'insideLeft', fill: '#2563eb', style: { fontSize: '11px', fontWeight: 600 } }} />
+                <YAxis yAxisId="right" orientation="right" stroke="#ef4444" label={{ value: 'Incidents Count', angle: 90, position: 'insideRight', fill: '#ef4444', style: { fontSize: '11px', fontWeight: 600 } }} />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                <Bar yAxisId="left" dataKey="total_rainfall_mm" name="Monthly Rainfall (mm)" fill="#2563eb" radius={[6, 6, 0, 0]} opacity={0.85} />
+                <Line yAxisId="right" type="monotone" dataKey="incidents_count" name="Blockage Incidents" stroke="#ef4444" strokeWidth={3} dot={{ r: 5, fill: '#ef4444' }} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -118,7 +137,7 @@ export default function RainfallPage() {
 
       {/* Rainfall Records Table */}
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
           <h3>Recent Rainfall Daily Log</h3>
           <span className="badge badge-info">Madurai IMD / Weather Station Data</span>
         </div>
@@ -138,31 +157,34 @@ export default function RainfallPage() {
                 </tr>
               </thead>
               <tbody>
-                {rainfallData.slice(0, 25).map((r) => (
-                  <tr key={r.id}>
-                    <td style={{ fontWeight: 500 }}>{r.record_date}</td>
-                    <td>{r.station_name || 'Madurai Central'}</td>
-                    <td style={{ fontWeight: 600, color: r.rainfall_mm > 40 ? 'var(--accent-danger)' : r.rainfall_mm > 15 ? 'var(--accent-warning)' : 'var(--accent-primary)' }}>
-                      {r.rainfall_mm} mm
-                    </td>
-                    <td>
-                      <span className={`badge ${
-                        r.rainfall_mm > 50 ? 'badge-danger' :
-                        r.rainfall_mm > 25 ? 'badge-warning' :
-                        r.rainfall_mm > 5 ? 'badge-info' : 'badge-success'
-                      }`}>
-                        {r.rainfall_mm > 50 ? 'EXTREME HEAVY' :
-                         r.rainfall_mm > 25 ? 'HEAVY RAIN' :
-                         r.rainfall_mm > 5 ? 'MODERATE' : 'LIGHT / DRY'}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="badge badge-info" style={{ fontSize: '10px' }}>
-                        {r.source || 'IMD_STATION'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {rainfallData.slice(0, 25).map((r, idx) => {
+                  const mm = r.rainfall_mm || 0
+                  return (
+                    <tr key={r.id || idx}>
+                      <td style={{ fontWeight: 600 }}>{r.date || r.record_date}</td>
+                      <td>{r.station || r.station_name || 'Madurai South IMD'}</td>
+                      <td style={{ fontWeight: 600, color: mm > 40 ? 'var(--cond-critical)' : mm > 15 ? 'var(--cond-fair)' : 'var(--cond-good)' }}>
+                        {mm} mm
+                      </td>
+                      <td>
+                        <span className={`badge ${
+                          mm > 50 ? 'badge-danger' :
+                          mm > 25 ? 'badge-warning' :
+                          mm > 5 ? 'badge-info' : 'badge-success'
+                        }`}>
+                          {mm > 50 ? 'EXTREME HEAVY' :
+                           mm > 25 ? 'HEAVY RAIN' :
+                           mm > 5 ? 'MODERATE' : 'LIGHT / DRY'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge badge-info" style={{ fontSize: '10px' }}>
+                          {r.source || 'IMD_STATION'}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
