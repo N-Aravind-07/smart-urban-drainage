@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { drainAPI } from '../api/client'
+import Pagination from '../components/common/Pagination'
 
 export default function DrainageNetworkPage() {
   const [drains, setDrains] = useState([])
@@ -12,6 +13,15 @@ export default function DrainageNetworkPage() {
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [conditionFilter, setConditionFilter] = useState('ALL')
   const [searchTerm, setSearchTerm] = useState('')
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [wardFilter, typeFilter, conditionFilter, searchTerm])
 
   useEffect(() => {
     fetchData()
@@ -211,9 +221,12 @@ export default function DrainageNetworkPage() {
       </div>
 
       {/* Data Table */}
-      <div className="card">
+      <div className="card" style={{ padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3>Network Segments ({filteredDrains.length})</h3>
+          <div>
+            <h3 style={{ margin: 0 }}>Network Segments ({filteredDrains.length})</h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Page {currentPage} of {Math.max(1, Math.ceil(filteredDrains.length / pageSize))}</span>
+          </div>
           <span className="badge badge-info">MADURAI CORPORATION GIS NETWORK</span>
         </div>
 
@@ -222,93 +235,105 @@ export default function DrainageNetworkPage() {
         ) : error ? (
           <div className="alert alert-danger">{error}</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Channel / Drain Name</th>
-                  <th>Ward Location</th>
-                  <th>Type</th>
-                  <th>Width × Depth</th>
-                  <th>Length</th>
-                  <th>Construction</th>
-                  <th>Condition</th>
-                  <th>Plastic Debris</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredDrains.length === 0 ? (
+          <div>
+            <div className="table-responsive-container">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
-                      No drain segments match the current filter selection. Try resetting filters above.
-                    </td>
+                    <th>Code</th>
+                    <th>Channel / Drain Name</th>
+                    <th>Ward Location</th>
+                    <th>Type</th>
+                    <th>Width × Depth</th>
+                    <th>Length</th>
+                    <th>Construction</th>
+                    <th>Condition</th>
+                    <th>Plastic Debris</th>
+                    <th>Status</th>
                   </tr>
-                ) : (
-                  filteredDrains.map((d) => {
-                    const cond = (d.condition || '').toUpperCase()
-                    const type = (d.drain_type || '').toUpperCase()
-                    return (
-                      <tr key={d.id || d.drain_id}>
-                        <td style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
-                          {d.drain_code || d.drain_id}
-                        </td>
-                        <td style={{ fontWeight: 500 }}>
-                          {d.name || 'Unnamed Drain'}
-                        </td>
-                        <td>
-                          {d.ward_name || `Ward ${d.ward_id}`}
-                        </td>
-                        <td>
-                          <span className={`badge ${
-                            type.includes('PRIMARY') ? 'badge-danger' :
-                            type.includes('SECONDARY') ? 'badge-warning' : 'badge-info'
-                          }`}>
-                            {d.drain_type}
-                          </span>
-                        </td>
-                        <td>
-                          {d.width_m || d.width_meters || 2.5}m × {d.depth_m || d.depth_meters || 1.8}m
-                        </td>
-                        <td style={{ fontWeight: 500 }}>
-                          {d.length_m || d.length_meters}m
-                        </td>
-                        <td style={{ color: 'var(--text-secondary)' }}>
-                          {d.material || 'RCC Culvert'}
-                        </td>
-                        <td>
-                          <span className={`badge ${
-                            cond === 'GOOD' ? 'badge-success' :
-                            cond === 'FAIR' ? 'badge-info' :
-                            cond === 'POOR' ? 'badge-warning' : 'badge-danger'
-                          }`}>
-                            {cond}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden', width: '50px' }}>
-                              <div style={{
-                                width: `${d.plastic_debris_ratio || 50}%`,
-                                height: '100%',
-                                background: (d.plastic_debris_ratio || 50) > 80 ? 'var(--cond-critical)' : (d.plastic_debris_ratio || 50) > 60 ? 'var(--cond-poor)' : 'var(--cond-good)'
-                              }} />
-                            </div>
-                            <span style={{ fontSize: '11px', fontWeight: 600 }}>{d.plastic_debris_ratio || 50}%</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="badge badge-success" style={{ fontSize: '10px' }}>
-                            ● ACTIVE
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredDrains.length === 0 ? (
+                    <tr>
+                      <td colSpan="10" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                        No drain segments match the current filter selection. Try resetting filters above.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredDrains
+                      .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                      .map((d) => {
+                        const cond = (d.condition || '').toUpperCase()
+                        const type = (d.drain_type || '').toUpperCase()
+                        return (
+                          <tr key={d.id || d.drain_id}>
+                            <td style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
+                              {d.drain_code || d.drain_id}
+                            </td>
+                            <td style={{ fontWeight: 600, color: '#0f172a' }}>
+                              {d.name || 'Madurai Waterway Channel'}
+                            </td>
+                            <td>
+                              {d.ward_name || `Ward ${d.ward_id}`}
+                            </td>
+                            <td>
+                              <span className={`badge ${
+                                type.includes('PRIMARY') || type.includes('CANAL') ? 'badge-danger' :
+                                type.includes('SECONDARY') || type.includes('CULVERT') ? 'badge-warning' : 'badge-info'
+                              }`}>
+                                {d.drain_type}
+                              </span>
+                            </td>
+                            <td>
+                              {d.width_m || d.width_meters || 2.5}m × {d.depth_m || d.depth_meters || 1.8}m
+                            </td>
+                            <td style={{ fontWeight: 500 }}>
+                              {d.length_m || d.length_meters}m
+                            </td>
+                            <td style={{ color: 'var(--text-secondary)' }}>
+                              {d.material || 'RCC Culvert'}
+                            </td>
+                            <td>
+                              <span className={`badge ${
+                                cond === 'GOOD' ? 'badge-success' :
+                                cond === 'FAIR' ? 'badge-info' :
+                                cond === 'POOR' ? 'badge-warning' : 'badge-danger'
+                              }`}>
+                                {cond}
+                              </span>
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden', width: '50px' }}>
+                                  <div style={{
+                                    width: `${d.plastic_debris_ratio || 50}%`,
+                                    height: '100%',
+                                    background: (d.plastic_debris_ratio || 50) > 80 ? 'var(--cond-critical)' : (d.plastic_debris_ratio || 50) > 60 ? 'var(--cond-poor)' : 'var(--cond-good)'
+                                  }} />
+                                </div>
+                                <span style={{ fontSize: '11px', fontWeight: 600 }}>{d.plastic_debris_ratio || 50}%</span>
+                              </div>
+                            </td>
+                            <td>
+                              <span className="badge badge-success" style={{ fontSize: '10px' }}>
+                                ● ACTIVE
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalItems={filteredDrains.length}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         )}
       </div>

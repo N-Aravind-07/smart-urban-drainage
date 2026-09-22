@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { riskAPI } from '../api/client'
+import Pagination from '../components/common/Pagination'
 
 export default function RiskPage() {
   const [riskItems, setRiskItems] = useState([])
@@ -9,6 +10,14 @@ export default function RiskPage() {
   const [tierFilter, setTierFilter] = useState('ALL')
   const [search, setSearch] = useState('')
   const [selectedItem, setSelectedItem] = useState(null)
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [tierFilter, search])
 
   useEffect(() => {
     fetchRiskScores()
@@ -150,9 +159,12 @@ export default function RiskPage() {
       </div>
 
       {/* Main Table */}
-      <div className="card">
+      <div className="card" style={{ padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3>Calculated Risk Index ({filtered.length} Drains)</h3>
+          <div>
+            <h3 style={{ margin: 0 }}>Calculated Risk Index ({filtered.length} Drains)</h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Page {currentPage} of {Math.max(1, Math.ceil(filtered.length / pageSize))}</span>
+          </div>
           <span className="badge badge-info">WEIGHTED MULTI-FACTOR MODEL</span>
         </div>
 
@@ -161,94 +173,106 @@ export default function RiskPage() {
         ) : error ? (
           <div className="alert alert-danger">{error}</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Drain Channel</th>
-                  <th>Location</th>
-                  <th>Risk Score</th>
-                  <th>Risk Level</th>
-                  <th>Plastic Load</th>
-                  <th>Action Needed</th>
-                  <th>Diagnostic</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
+          <div>
+            <div className="table-responsive-container">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
-                      No drain channels match the selected filter. Try selecting 'All Risk Tiers'.
-                    </td>
+                    <th>Drain Channel</th>
+                    <th>Location</th>
+                    <th>Risk Score</th>
+                    <th>Risk Level</th>
+                    <th>Plastic Load</th>
+                    <th>Action Needed</th>
+                    <th>Diagnostic</th>
                   </tr>
-                ) : (
-                  filtered.map((item) => {
-                    const score = Math.round(item.total_score || item.risk_score || 0)
-                    const level = (item.risk_level || item.risk_category || 'MEDIUM').toUpperCase()
-                    return (
-                      <tr key={item.drain_id || item.id}>
-                        <td>
-                          <div style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
-                            {item.drain_code || item.drain_id}
-                          </div>
-                          <div style={{ fontSize: '12px', fontWeight: 500 }}>
-                            {item.drain_name || item.name}
-                          </div>
-                        </td>
-                        <td>
-                          {item.ward_name || `Ward ${item.ward_id}`}
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{
-                              fontWeight: 'bold',
-                              fontSize: '15px',
-                              color: score >= 70 ? 'var(--cond-critical)' :
-                                     score >= 45 ? 'var(--cond-fair)' : 'var(--cond-good)'
-                            }}>
-                              {score}
-                            </span>
-                            <div style={{ flex: 1, height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', width: '70px', overflow: 'hidden' }}>
-                              <div style={{
-                                height: '100%',
-                                width: `${score}%`,
-                                backgroundColor: score >= 70 ? '#ef4444' :
-                                                 score >= 45 ? '#f59e0b' : '#10b981'
-                              }} />
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <span className={`badge ${
-                            level === 'HIGH' ? 'badge-danger' :
-                            level === 'MEDIUM' ? 'badge-warning' : 'badge-success'
-                          }`}>
-                            {level}
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontWeight: 600, fontSize: '12px' }}>
-                            {item.plastic_ratio || 75}% plastic debris
-                          </span>
-                        </td>
-                        <td style={{ fontSize: '12px', maxWidth: '240px' }}>
-                          {item.recommended_action || (score >= 70 ? '🔥 High Priority Trash Trap' : score >= 45 ? '🔧 Desilting & Screen Check' : '✅ Routine Monitoring')}
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-secondary"
-                            style={{ padding: '4px 10px', fontSize: '11px' }}
-                            onClick={() => setSelectedItem(item)}
-                          >
-                            🔍 Breakdown
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                        No drain channels match the selected filter. Try selecting 'All Risk Tiers'.
+                      </td>
+                    </tr>
+                  ) : (
+                    filtered
+                      .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                      .map((item) => {
+                        const score = Math.round(item.total_score || item.risk_score || 0)
+                        const level = (item.risk_level || item.risk_category || 'MEDIUM').toUpperCase()
+                        return (
+                          <tr key={item.drain_id || item.id}>
+                            <td>
+                              <div style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
+                                {item.drain_code || item.drain_id}
+                              </div>
+                              <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
+                                {item.drain_name || item.name}
+                              </div>
+                            </td>
+                            <td style={{ fontWeight: 500 }}>
+                              {item.ward_name || `Ward ${item.ward_id}`}
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{
+                                  fontWeight: 'bold',
+                                  fontSize: '15px',
+                                  color: score >= 70 ? 'var(--cond-critical)' :
+                                         score >= 45 ? 'var(--cond-fair)' : 'var(--cond-good)'
+                                }}>
+                                  {score}
+                                </span>
+                                <div style={{ flex: 1, height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', width: '70px', overflow: 'hidden' }}>
+                                  <div style={{
+                                    height: '100%',
+                                    width: `${score}%`,
+                                    backgroundColor: score >= 70 ? '#ef4444' :
+                                                     score >= 45 ? '#f59e0b' : '#10b981'
+                                  }} />
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`badge ${
+                                level === 'HIGH' ? 'badge-danger' :
+                                level === 'MEDIUM' ? 'badge-warning' : 'badge-success'
+                              }`}>
+                                {level}
+                              </span>
+                            </td>
+                            <td>
+                              <span style={{ fontWeight: 600, fontSize: '12px' }}>
+                                {item.plastic_ratio || 75}% plastic debris
+                              </span>
+                            </td>
+                            <td style={{ fontSize: '12px', maxWidth: '240px' }}>
+                              {item.recommended_action || (score >= 70 ? '🔥 High Priority Trash Trap' : score >= 45 ? '🔧 Desilting & Screen Check' : '✅ Routine Monitoring')}
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-secondary"
+                                style={{ padding: '4px 10px', fontSize: '11px' }}
+                                onClick={() => setSelectedItem(item)}
+                              >
+                                🔍 Breakdown
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalItems={filtered.length}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         )}
       </div>

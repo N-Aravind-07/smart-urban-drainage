@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { incidentAPI, drainAPI } from '../api/client'
+import Pagination from '../components/common/Pagination'
 
 export default function IncidentsPage() {
   const [incidents, setIncidents] = useState([])
@@ -11,6 +12,14 @@ export default function IncidentsPage() {
   const [severityFilter, setSeverityFilter] = useState('ALL')
   const [plasticFilter, setPlasticFilter] = useState('ALL')
   const [search, setSearch] = useState('')
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [severityFilter, plasticFilter, search])
 
   // New incident modal/form
   const [showModal, setShowModal] = useState(false)
@@ -230,9 +239,12 @@ export default function IncidentsPage() {
       </div>
 
       {/* Table */}
-      <div className="card">
+      <div className="card" style={{ padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <h3>Incidents Log ({filteredIncidents.length})</h3>
+          <div>
+            <h3 style={{ margin: 0 }}>Incidents Log ({filteredIncidents.length})</h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Page {currentPage} of {Math.max(1, Math.ceil(filteredIncidents.length / pageSize))}</span>
+          </div>
           <span className="badge badge-info">OFFICIAL FIELD VERIFIED RECORDS</span>
         </div>
 
@@ -241,94 +253,106 @@ export default function IncidentsPage() {
         ) : error ? (
           <div className="alert alert-danger">{error}</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Drain Code</th>
-                  <th>Location / Observations</th>
-                  <th>Severity</th>
-                  <th>Blockage Type</th>
-                  <th>Plastic Type</th>
-                  <th>Est. Qty</th>
-                  <th>Overflow</th>
-                  <th>Verified</th>
-                  <th>Data Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredIncidents.length === 0 ? (
+          <div>
+            <div className="table-responsive-container">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
-                      No blockage incidents found matching criteria. Try adjusting or resetting the filters.
-                    </td>
+                    <th>Date & Time</th>
+                    <th>Drain Code</th>
+                    <th>Location / Observations</th>
+                    <th>Severity</th>
+                    <th>Blockage Type</th>
+                    <th>Plastic Type</th>
+                    <th>Est. Qty</th>
+                    <th>Overflow</th>
+                    <th>Verified</th>
+                    <th>Data Source</th>
                   </tr>
-                ) : (
-                  filteredIncidents.map((inc) => {
-                    const sev = (inc.severity || 'MEDIUM').toUpperCase()
-                    return (
-                      <tr key={inc.id || inc.incident_id}>
-                        <td style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>
-                          <strong>{inc.incident_date}</strong> <span style={{ color: 'var(--text-muted)' }}>{inc.incident_time || ''}</span>
-                        </td>
-                        <td style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
-                          {inc.drain_code || inc.drain_id}
-                        </td>
-                        <td style={{ maxWidth: '240px' }}>
-                          <div style={{ fontWeight: 600, fontSize: '13px' }}>{inc.location_name || 'Madurai Drain Point'}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {inc.remarks || inc.description}
-                          </div>
-                        </td>
-                        <td>
-                          <span className={`badge ${
-                            sev === 'CRITICAL' ? 'badge-danger' :
-                            sev === 'HIGH' ? 'badge-warning' :
-                            sev === 'MEDIUM' ? 'badge-info' : 'badge-success'
-                          }`}>
-                            {sev}
-                          </span>
-                        </td>
-                        <td style={{ fontSize: '12px', fontWeight: 500 }}>
-                          {(inc.blockage_type || 'PLASTIC').replace(/_/g, ' ')}
-                        </td>
-                        <td style={{ fontSize: '12px' }}>
-                          <span style={{
-                            padding: '2px 6px',
-                            background: '#eff6ff',
-                            color: '#1d4ed8',
-                            borderRadius: '4px',
-                            fontWeight: 600,
-                            fontSize: '11px'
-                          }}>
-                            {(inc.plastic_type || 'MIXED').replace(/_/g, ' ')}
-                          </span>
-                        </td>
-                        <td style={{ fontWeight: 600 }}>
-                          {inc.estimated_quantity_kg ? `${inc.estimated_quantity_kg} kg` : 'N/A'}
-                        </td>
-                        <td>
-                          {inc.water_overflow_cm ? (
-                            <span style={{ color: inc.water_overflow_cm > 20 ? 'var(--cond-critical)' : 'var(--text-primary)', fontWeight: 600 }}>
-                              {inc.water_overflow_cm} cm
-                            </span>
-                          ) : 'None'}
-                        </td>
-                        <td>
-                          <span className="badge badge-success">✓ Verified</span>
-                        </td>
-                        <td>
-                          <span className="badge badge-info" style={{ fontSize: '10px' }}>
-                            {inc.source || 'OFFICIAL_FIELD_REPORT'}
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredIncidents.length === 0 ? (
+                    <tr>
+                      <td colSpan="10" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                        No blockage incidents found matching criteria. Try adjusting or resetting the filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredIncidents
+                      .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                      .map((inc) => {
+                        const sev = (inc.severity || 'MEDIUM').toUpperCase()
+                        return (
+                          <tr key={inc.id || inc.incident_id}>
+                            <td style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>
+                              <strong>{inc.incident_date}</strong> <span style={{ color: 'var(--text-muted)' }}>{inc.incident_time || ''}</span>
+                            </td>
+                            <td style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
+                              {inc.drain_code || inc.drain_id}
+                            </td>
+                            <td style={{ maxWidth: '260px' }}>
+                              <div style={{ fontWeight: 600, fontSize: '13px', color: '#0f172a' }}>{inc.location_name || 'Madurai Corporation Sump'}</div>
+                              <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {inc.remarks || inc.description}
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`badge ${
+                                sev === 'CRITICAL' ? 'badge-danger' :
+                                sev === 'HIGH' ? 'badge-warning' :
+                                sev === 'MEDIUM' ? 'badge-info' : 'badge-success'
+                              }`}>
+                                {sev}
+                              </span>
+                            </td>
+                            <td style={{ fontSize: '12px', fontWeight: 500 }}>
+                              {(inc.blockage_type || 'PLASTIC').replace(/_/g, ' ')}
+                            </td>
+                            <td style={{ fontSize: '12px' }}>
+                              <span style={{
+                                padding: '2px 6px',
+                                background: '#eff6ff',
+                                color: '#1d4ed8',
+                                borderRadius: '4px',
+                                fontWeight: 600,
+                                fontSize: '11px'
+                              }}>
+                                {(inc.plastic_type || 'MIXED').replace(/_/g, ' ')}
+                              </span>
+                            </td>
+                            <td style={{ fontWeight: 600 }}>
+                              {inc.estimated_quantity_kg ? `${inc.estimated_quantity_kg} kg` : 'N/A'}
+                            </td>
+                            <td>
+                              {inc.water_overflow_cm ? (
+                                <span style={{ color: inc.water_overflow_cm > 20 ? 'var(--cond-critical)' : 'var(--text-primary)', fontWeight: 600 }}>
+                                  {inc.water_overflow_cm} cm
+                                </span>
+                              ) : 'None'}
+                            </td>
+                            <td>
+                              <span className="badge badge-success">✓ Verified</span>
+                            </td>
+                            <td>
+                              <span className="badge badge-info" style={{ fontSize: '10px' }}>
+                                {inc.source || 'OFFICIAL_FIELD_REPORT'}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalItems={filteredIncidents.length}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
           </div>
         )}
       </div>
