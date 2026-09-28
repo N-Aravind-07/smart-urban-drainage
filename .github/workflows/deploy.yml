@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,10 +12,13 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,9 +37,24 @@ jobs:
       - name: Build
         run: cd frontend && npm run build
 
+      - name: Ensure .nojekyll and 404.html exist
+        run: |
+          touch frontend/dist/.nojekyll
+          cp frontend/dist/index.html frontend/dist/404.html
+
       - name: Deploy to gh-pages branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: frontend/dist
           branch: gh-pages
           clean: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
