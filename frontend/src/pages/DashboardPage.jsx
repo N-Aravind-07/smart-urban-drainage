@@ -50,9 +50,9 @@ export default function DashboardPage() {
   const plasticPct = s.total_incidents ? Math.round(s.plastic_incidents / s.total_incidents * 100) : 85
 
   return (
-    <div className="page-content" style={{ padding: '24px' }}>
+    <div className="page-content" style={{ width: '100%', boxSizing: 'border-box' }}>
       {/* Top Banner Header */}
-      <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+      <div className="page-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', width: '100%' }}>
         <div>
           <h1 className="page-title">📊 Executive Drainage Dashboard</h1>
           <p className="page-subtitle">
@@ -78,7 +78,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid-2 mb-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
+      <div className="grid-2 mb-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(420px, 100%), 1fr))', gap: '20px', width: '100%', boxSizing: 'border-box' }}>
         <div className="panel">
           <div className="panel-header">
             <div>
@@ -126,35 +126,35 @@ export default function DashboardPage() {
           <div className="panel-subtitle">Access core decision-support tools</div>
         </div>
         <div className="panel-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-            <Link to="/map" className="card" style={{ padding: 16, textDecoration: 'none' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>🗺️</div>
-              <div style={{ fontWeight: 'bold', fontSize: 14 }}>GIS Network Map</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', width: '100%', boxSizing: 'border-box' }}>
+            <Link to="/map" className="card" style={{ padding: '20px', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>🗺️</div>
+              <div style={{ fontWeight: 'bold', fontSize: 15 }}>GIS Network Map</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Interactive Madurai Waterways</div>
             </Link>
-            <Link to="/drainage-network" className="card" style={{ padding: 16, textDecoration: 'none' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>🌊</div>
-              <div style={{ fontWeight: 'bold', fontSize: 14 }}>Drainage Network</div>
+            <Link to="/drainage-network" className="card" style={{ padding: '20px', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>🌊</div>
+              <div style={{ fontWeight: 'bold', fontSize: 15 }}>Drainage Network</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Channel Inventory & Wards</div>
             </Link>
-            <Link to="/risk" className="card" style={{ padding: 16, textDecoration: 'none' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>⚠️</div>
-              <div style={{ fontWeight: 'bold', fontSize: 14 }}>Risk Scoring</div>
+            <Link to="/risk" className="card" style={{ padding: '20px', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>⚠️</div>
+              <div style={{ fontWeight: 'bold', fontSize: 15 }}>Risk Scoring</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>6-Factor Weighted Index</div>
             </Link>
-            <Link to="/analytics" className="card" style={{ padding: 16, textDecoration: 'none' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>📈</div>
-              <div style={{ fontWeight: 'bold', fontSize: 14 }}>Analytics</div>
+            <Link to="/analytics" className="card" style={{ padding: '20px', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>📈</div>
+              <div style={{ fontWeight: 'bold', fontSize: 15 }}>Analytics</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>6 Statistical Charts</div>
             </Link>
-            <Link to="/ml" className="card" style={{ padding: 16, textDecoration: 'none' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>🤖</div>
-              <div style={{ fontWeight: 'bold', fontSize: 14 }}>ML Predictor</div>
+            <Link to="/ml" className="card" style={{ padding: '20px', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>🤖</div>
+              <div style={{ fontWeight: 'bold', fontSize: 15 }}>ML Predictor</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Hydro-Plastic Model</div>
             </Link>
-            <Link to="/interventions" className="card" style={{ padding: 16, textDecoration: 'none' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>🔧</div>
-              <div style={{ fontWeight: 'bold', fontSize: 14 }}>Work Orders</div>
+            <Link to="/interventions" className="card" style={{ padding: '20px', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>🔧</div>
+              <div style={{ fontWeight: 'bold', fontSize: 15 }}>Work Orders</div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Desilting & Interventions</div>
             </Link>
           </div>

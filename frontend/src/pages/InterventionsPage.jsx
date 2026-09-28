@@ -304,7 +304,7 @@ export default function InterventionsPage() {
           backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <div className="card" style={{ width: '550px', maxWidth: '90vw' }}>
+          <div className="card" style={{ width: '550px', maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3>➕ Issue Municipal Work Order</h3>
               <button className="btn btn-secondary" onClick={() => setShowCreateModal(false)}>✕</button>
@@ -405,7 +405,7 @@ export default function InterventionsPage() {
           backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <div className="card" style={{ width: '480px', maxWidth: '90vw' }}>
+          <div className="card" style={{ width: '480px', maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3>Update Workflow Status</h3>
               <button className="btn btn-secondary" onClick={() => setSelectedIntervention(null)}>✕</button>
@@ -461,7 +461,7 @@ export default function InterventionsPage() {
           backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <div className="card" style={{ width: '520px', maxWidth: '90vw' }}>
+          <div className="card" style={{ width: '520px', maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3>📊 Before/After Impact Evaluation</h3>
               <button className="btn btn-secondary" onClick={() => setEvalData(null)}>✕</button>

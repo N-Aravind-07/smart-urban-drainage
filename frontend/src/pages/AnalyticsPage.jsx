@@ -168,7 +168,7 @@ export default function AnalyticsPage() {
       ) : error ? (
         <div className="alert alert-danger">{error}</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(420px, 100%), 1fr))', gap: '20px' }}>
 
           {/* Chart 1: Monthly Blockage Trend */}
           <div className="card">

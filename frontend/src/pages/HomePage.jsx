@@ -71,11 +71,11 @@ export default function HomePage() {
         <div style={{
           position: 'relative',
           zIndex: 10,
-          maxWidth: '1000px',
-          margin: '0 auto',
-          padding: '60px 24px 40px',
+          width: '100%',
+          padding: '60px 32px 40px',
           textAlign: 'center',
           color: '#ffffff',
+          boxSizing: 'border-box',
         }}>
           {/* Municipal Tag */}
           <div style={{
@@ -115,7 +115,7 @@ export default function HomePage() {
             fontSize: 'clamp(15px, 2vw, 18px)',
             lineHeight: 1.6,
             color: '#e2e8f0',
-            maxWidth: '780px',
+            maxWidth: '960px',
             margin: '0 auto 32px',
             textShadow: '0 1px 4px rgba(0,0,0,0.4)',
           }}>
@@ -188,19 +188,22 @@ export default function HomePage() {
       </div>
 
       {/* Main Body Content on Clean White Background */}
-      <div style={{ maxWidth: '1200px', margin: '-40px auto 40px', padding: '0 24px', position: 'relative', zIndex: 20 }}>
+      <div style={{ width: '100%', margin: '-40px 0 40px', padding: '0 28px', position: 'relative', zIndex: 20, boxSizing: 'border-box' }}>
         {/* Live Metrics Ticker Bar */}
         <div className="card mb-4" style={{
           boxShadow: '0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.03)',
           border: '1px solid #e2e8f0',
-          padding: '20px 28px',
+          padding: '22px 28px',
+          width: '100%',
+          boxSizing: 'border-box',
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '20px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: '24px',
             alignItems: 'center',
             textAlign: 'center',
+            width: '100%',
           }}>
             <div>
               <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--accent-blue)' }}>37.8 km</div>
@@ -234,7 +237,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', width: '100%' }}>
             {[
               {
                 icon: '🗺️',
@@ -346,7 +349,7 @@ export default function HomePage() {
         </div>
 
         {/* Municipal Notice Footer */}
-        <div className="card" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '16px 20px', textAlign: 'center', fontSize: '12px', color: '#64748b' }}>
+        <div className="card" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '18px 24px', textAlign: 'center', fontSize: '13px', color: '#64748b', width: '100%', boxSizing: 'border-box' }}>
           🏛️ <strong>Madurai Municipal Corporation</strong> · Smart Urban Drainage & AI Plastic Blockage Platform · Verified Field GIS Network
         </div>
       </div>

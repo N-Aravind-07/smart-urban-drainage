@@ -284,7 +284,7 @@ export default function RiskPage() {
           backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', zIndex: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <div className="card" style={{ width: '520px', maxWidth: '92vw', padding: '24px' }}>
+          <div className="card" style={{ width: '520px', maxWidth: '92vw', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div>
                 <h3>Risk Breakdown: {selectedItem.drain_code || selectedItem.drain_id}</h3>

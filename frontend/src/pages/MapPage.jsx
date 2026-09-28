@@ -205,9 +205,9 @@ export default function MapPage() {
   const activeDrainCount = drainGeo?.features?.length || 0
 
   return (
-    <div className="map-page" style={{ height: '100%', width: '100%', display: 'flex', overflow: 'hidden' }}>
+    <div className="map-page" style={{ height: 'calc(100vh - var(--topbar-height) - 37px)', minHeight: '600px', width: '100%', display: 'flex', overflow: 'hidden' }}>
       {/* Left Sidebar */}
-      <div className="map-sidebar" style={{ width: 320, minWidth: 320, background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+      <div className="map-sidebar" style={{ width: 320, minWidth: 320, maxWidth: 320, height: '100%', background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', overflowY: 'auto', flexShrink: 0 }}>
         
         {/* Basemap Selector */}
         <div style={{ padding: '14px 18px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>

@@ -29,7 +29,7 @@ export default function App() {
       <div className="main-content">
         <TopBar />
         <DemoBanner />
-        <div className="page-content" style={{ padding: 0 }}>
+        <div className="content-viewport">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
