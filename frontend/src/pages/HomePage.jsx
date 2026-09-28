@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
+const BASE_PATH = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+
 const MADURAI_SLIDES = [
   {
-    image: '/images/madurai_city_skyline.jpg',
+    image: `${BASE_PATH}/images/madurai_city_skyline.jpg`,
     caption: 'Madurai City & Historic Meenakshi Temple Precinct',
     sub: 'Central urban drainage basin and historic temple ring channels',
   },
   {
-    image: '/images/madurai_vaigai_river.jpg',
+    image: `${BASE_PATH}/images/madurai_vaigai_river.jpg`,
     caption: 'Vaigai River Basin & Urban Drainage Outfalls',
     sub: 'Primary river outfall trunk channels feeding Madurai South and North',
   },
@@ -63,8 +65,7 @@ export default function HomePage() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'linear-gradient(180deg, rgba(15,23,42,0.45) 0%, rgba(15,23,42,0.78) 75%, #f8fafc 100%)',
-          backdropFilter: 'blur(1px)',
+          background: 'linear-gradient(180deg, rgba(15,23,42,0.30) 0%, rgba(15,23,42,0.68) 70%, #f8fafc 100%)',
         }} />
 
         {/* Hero Content */}
